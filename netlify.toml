@@ -1,0 +1,15 @@
+﻿[build]
+  command = "npm run build"
+  publish = "frontend/dist"
+  functions = "functions"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[dev]
+  command = "npm run dev:fe"   # arranca Vite
+  port = 8888                  # Netlify Dev en 8888
+  targetPort = 5173            # Vite corre en 5173
+  functionsPort = 9999         # puerto interno para functions
