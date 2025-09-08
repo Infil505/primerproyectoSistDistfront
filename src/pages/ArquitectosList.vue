@@ -8,6 +8,7 @@ const loading = ref(false)
 async function load() {
     loading.value = true
     items.value = await list('arquitectos')
+    console.log(items.value)
     loading.value = false
 }
 async function remove(id) {
