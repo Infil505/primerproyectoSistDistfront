@@ -1,20 +1,13 @@
 // src/api/index.js
 import axios from 'axios'
 
-// ── Resolución de baseURL ────────────────────────────────────────────────
-// DEV  → '/api'  (Vite proxy)
-// PROD → VITE_API_BASE (si existe) o dominio del backend (sin proxy)
 function resolveBaseURL() {
   const envBase = (import.meta.env.VITE_API_BASE || '').trim()
   if (envBase) return envBase.replace(/\/$/, '')
-
-  if (import.meta.env.DEV) {
-    // Tu front corre en 5173 y Vite reescribe /api → /.netlify/functions a donde apuntes
-    return '/api'
-  }
-
-  // Producción: backend ya publicado en Netlify Functions
-  return 'https://lucent-toffee-15f013.netlify.app/.netlify/functions'
+  // Dev: usa /api (Vite proxy). Prod: fallback directo al backend.
+  return import.meta.env.DEV
+    ? '/api'
+    : 'https://lucent-toffee-15f013.netlify.app/.netlify/functions'
 }
 
 const baseURL = resolveBaseURL()
@@ -25,7 +18,7 @@ export const api = axios.create({
   headers: { Accept: 'application/json' },
 })
 
-// ── (Opcional) logs y protección contra HTML (SPA) ───────────────────────
+// — Logs defensivos (no rompen si base es relativa)
 const isAbs = (s) => /^https?:\/\//i.test(s || '')
 const joinUrl = (base, path) => {
   base = base || ''; path = path || ''
@@ -48,9 +41,7 @@ api.interceptors.response.use(
     const finalUrl = res.request?.responseURL || res.config.metadata?.full || joinUrl(res.config.baseURL, res.config.url)
     const ct = res.headers?.['content-type'] || ''
     console.log('[API←]', res.status, finalUrl, `${ms.toFixed(0)}ms`, ct)
-    if (!ct.includes('application/json')) {
-      console.warn('Respuesta no JSON (¿SPA?) desde:', finalUrl)
-    }
+    if (!ct.includes('application/json')) console.warn('Respuesta no JSON (¿SPA?) desde:', finalUrl)
     return res
   },
   (err) => {
@@ -61,7 +52,7 @@ api.interceptors.response.use(
   }
 )
 
-// ── CRUD helpers ─────────────────────────────────────────────────────────
+// CRUD helpers
 export const list       = (entity, params = {}) => api.get(`/${entity}`, { params }).then(r => r.data)
 export const getOne     = (entity, id)          => api.get(`/${entity}`, { params: { id } }).then(r => r.data)
 export const createOne  = (entity, payload)     => api.post(`/${entity}`, payload).then(r => r.data)
