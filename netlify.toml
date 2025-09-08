@@ -1,5 +1,5 @@
 ﻿[build]
-  command = ""
+  command = "npm run build"
   publish = "frontend/dist"
   functions = "functions"
 
