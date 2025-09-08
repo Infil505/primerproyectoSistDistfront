@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8888',
+        target: 'https://lucent-toffee-15f013.netlify.app/',
         changeOrigin: true,
         rewrite: p => p.replace(/^\/api/, '/.netlify/functions'),
       },

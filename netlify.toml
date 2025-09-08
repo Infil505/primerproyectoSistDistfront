@@ -1,15 +1,7 @@
-﻿[build]
-command = "npm ci && npm run build"
-publish = "dist"
+[build]
+command = "npm --prefix frontend ci && npm --prefix frontend run build"
+publish = "frontend/dist"
 
-# Proxy /api/* del FRONTEND -> Functions del BACKEND (otro sitio)
-[[redirects]]
-from = "/api/*"
-to = "https://lucent-toffee-15f013.netlify.app/.netlify/functions/:splat"
-status = 200
-force = true
-
-# SPA fallback (Vue/React Router)
 [[redirects]]
 from = "/*"
 to = "/index.html"
