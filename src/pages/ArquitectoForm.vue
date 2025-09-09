@@ -33,8 +33,251 @@ onMounted(loadOne)
   </section>
 </template>
 
-<style>
-label { display:block; margin:.5rem 0; }
-input { width:100%; padding:.4rem; }
-</style>
 
+<style>
+/* Variables simples */
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-700: #374151;
+  --gray-900: #111827;
+  --white: #ffffff;
+  --success: #10b981;
+  --radius: 8px;
+}
+
+/* Container para layout de dos columnas */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  animation: slideUp 0.5s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.form-row:nth-child(1) { animation-delay: 0.1s; }
+.form-row:nth-child(2) { animation-delay: 0.2s; }
+.form-row:nth-child(3) { animation-delay: 0.3s; }
+.form-row:nth-child(4) { animation-delay: 0.4s; }
+.form-row:nth-child(5) { animation-delay: 0.5s; }
+
+/* Para campos que ocupan toda la fila */
+.form-full-width {
+  grid-column: 1 / -1;
+}
+
+/* Título simple con animación */
+h1 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+/* Labels */
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: var(--gray-700);
+  font-size: 0.875rem;
+}
+
+/* Inputs y selects con movimientos suaves */
+input, select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: var(--white);
+  color: var(--gray-900);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+/* Efectos de hover */
+input:hover, select:hover {
+  border-color: var(--gray-300);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Efectos de focus */
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+}
+
+/* Cuando el input tiene contenido */
+input:not(:placeholder-shown) {
+  border-color: var(--success);
+  background: rgba(16, 185, 129, 0.03);
+}
+
+/* Botón principal */
+button {
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  padding: 0.875rem 2rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto de ondas en el botón */
+button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+button:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+button:active {
+  transform: translateY(-1px);
+}
+
+/* Link de cancelar */
+a {
+  color: var(--gray-400);
+  text-decoration: none;
+  padding: 0.875rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+}
+
+a:hover {
+  color: var(--gray-700);
+  background: var(--gray-100);
+  border-color: var(--gray-200);
+  transform: translateY(-2px);
+}
+
+/* Select personalizado */
+select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+  appearance: none;
+}
+
+/* Animaciones */
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efecto flotante en inputs cuando están activos */
+input:focus + .floating-label,
+input:not(:placeholder-shown) + .floating-label {
+  transform: translateY(-1.5rem) scale(0.875);
+  color: var(--primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .form-full-width {
+    grid-column: 1;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  button, a {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Micro-interacciones adicionales */
+input:focus {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15); }
+  50% { box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25); }
+  100% { box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15); }
+}
+
+/* Efecto de carga en el botón */
+button:disabled {
+  opacity: 0.7;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0%, 100% { transform: translateY(-3px) scale(1); }
+  50% { transform: translateY(-3px) scale(1.02); }
+}
+
+/* Transiciones suaves para todo */
+* {
+  box-sizing: border-box;
+}
+
+/* Reducir movimiento para usuarios que lo prefieren */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
