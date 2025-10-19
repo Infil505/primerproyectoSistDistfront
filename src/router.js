@@ -39,12 +39,12 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
   const isAuth = !!getAuth();
 
-  if (to.path === "/" && isAuth) {
+  if (to.path === "/home" && isAuth) {
     return next("/home");
   }
 
   if (to.meta.requiresAuth && !isAuth) {
-    return next("/");
+    return next("/home");
   }
 
   next();
