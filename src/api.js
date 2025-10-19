@@ -118,8 +118,8 @@ export const login = (gmail, password) =>
       return data;
     });
 
-export const register = (gmail, password, name) =>
-  api.post(`/users`, { gmail, password, name }).then(unwrap);
+export const register = (email, password, name) =>
+  api.post(`/users`, { email, password, name }).then(unwrap);
 
 export const changePassword = (id, oldPassword, newPassword) =>
   api
