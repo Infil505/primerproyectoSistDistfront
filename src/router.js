@@ -74,7 +74,8 @@ router.beforeEach((to, _from, next) => {
   const isAuth = !!getAuth();
 
   if (to.path === "/home" && isAuth) {
-    return next("/edificios");
+    window.location.href = "/edificios";
+    return;
   }
 
   if (to.meta.requiresAuth && !isAuth) {
