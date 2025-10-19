@@ -74,13 +74,13 @@ router.beforeEach((to, _from, next) => {
   const isAuth = !!getAuth();
 
   if (to.path === "/home" && isAuth) {
-    next("/edificios");
-    setTimeout(() => window.location.reload(), 100);
+    window.location.href = "/edificios";
     return;
   }
 
   if (to.meta.requiresAuth && !isAuth) {
-    return next("/home");
+    window.location.href = "/edificios";
+    return;
   }
 
   next();

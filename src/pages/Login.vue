@@ -34,7 +34,7 @@ async function onLogin() {
     try {
         const data = await login(gmail.value, password.value);
         saveAuth(data);
-        router.push("/edificios");
+        router.push("/home");
     } catch (e) {
         error.value = extractErr(e);
     }

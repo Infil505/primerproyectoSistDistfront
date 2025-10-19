@@ -50,7 +50,7 @@ async function onRegister() {
         saveAuth(data);
 
         // 3) Redirigir
-        router.push("/edificios");
+        router.push("/home");
     } catch (err) {
         error.value = extractErr(err);
     } finally {
