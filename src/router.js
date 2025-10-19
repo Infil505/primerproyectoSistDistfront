@@ -62,7 +62,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
 
-  { path: "/:pathMatch(.*)*", redirect: "/" },
+  { path: "/:pathMatch(.*)*", redirect: "/home" },
 ];
 
 const router = createRouter({
