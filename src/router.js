@@ -11,7 +11,7 @@ import ArquitectoForm from "./pages/ArquitectoForm.vue";
 import Register from "./pages/Register.vue";
 
 const routes = [
-  { path: "/Login", name: "Login", component: Login },
+  { path: "/", name: "Login", component: Login },
   { path: "/register", name: "register", component: Register},
   { path: "/edificios", component: EdificiosList, meta: { requiresAuth: true } },
   { path: "/edificios/nuevo", component: EdificioForm, meta: { requiresAuth: true } },
