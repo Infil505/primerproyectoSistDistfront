@@ -82,7 +82,7 @@ async function onRegister() {
 
         <p class="hint">
             ¿Ya tienes cuenta?
-            <router-link to="/">Iniciar sesión</router-link>
+            <router-link to="/home">Iniciar sesión</router-link>
         </p>
     </div>
 </template>
