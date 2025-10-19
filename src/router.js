@@ -37,7 +37,7 @@ router.beforeEach((to, _from, next) => {
   const isAuth = !!getAuth();
 
   if (to.path === "/" && isAuth) {
-    return next("/");
+    return next("/ciudades");
   }
 
   if (to.meta.requiresAuth && !isAuth) {
