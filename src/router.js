@@ -9,8 +9,11 @@ import CiudadForm from "./pages/CiudadForm.vue";
 import ArquitectosList from "./pages/ArquitectosList.vue";
 import ArquitectoForm from "./pages/ArquitectoForm.vue";
 import Register from "./pages/Register.vue";
+import Home from "./App.vue";
+
 
 const routes = [
+  { path: "/home", name: "Home", component: Home },
   { path: "/", name: "Login", component: Login },
   { path: "/register", name: "register", component: Register},
   { path: "/edificios", component: EdificiosList, meta: { requiresAuth: true } },
@@ -37,7 +40,7 @@ router.beforeEach((to, _from, next) => {
   const isAuth = !!getAuth();
 
   if (to.path === "/" && isAuth) {
-    return next("/ciudades");
+    return next("/home");
   }
 
   if (to.meta.requiresAuth && !isAuth) {
