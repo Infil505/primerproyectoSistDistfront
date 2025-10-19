@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import { register, login, saveAuth } from "../api";
 
 const name = ref("");
-const email = ref("");
+const gmail = ref("");
 const password = ref("");
 const confirm = ref("");
 const error = ref("");
@@ -20,7 +20,7 @@ async function onRegister() {
     error.value = "";
 
     // Validaciones de cliente
-    const e = String(email.value || "").trim().toLowerCase();
+    const e = String(gmail.value || "").trim().toLowerCase();
     if (!e) {
         error.value = "El correo es obligatorio";
         return;
@@ -67,7 +67,7 @@ async function onRegister() {
             <input v-model.trim="name" type="text" placeholder="Nombre completo" required />
 
             <!-- Renombrado a email -->
-            <input v-model.trim="email" type="email" placeholder="Correo (gmail)" required />
+            <input v-model.trim="gmail" type="gmail" placeholder="Correo (gmail)" required />
 
             <input v-model="password" type="password" placeholder="Contraseña (mínimo 8 caracteres)" minlength="8"
                 required />

@@ -62,29 +62,13 @@ api.interceptors.request.use((cfg) => {
 });
 
 api.interceptors.response.use(
-  (res) => {
-    const ms =
-      performance.now() - (res.config.metadata?.start ?? performance.now());
-    const finalUrl =
-      res.request?.responseURL ||
-      res.config.metadata?.full ||
-      joinUrl(res.config.baseURL, res.config.url);
-    const ct = res.headers?.["content-type"] || "";
-    console.log("[API←]", res.status, finalUrl, `${ms.toFixed(0)}ms`, ct);
-    if (!ct.includes("application/json"))
-      console.warn("Respuesta no JSON (¿SPA?) desde:", finalUrl);
-    return res;
-  },
+  (res) => res,
   (err) => {
-    const cfg = err.config || {};
-    const finalUrl = err.request?.responseURL || joinUrl(cfg.baseURL, cfg.url);
     const code = err.response?.status ?? "ERR";
-    console.error("[API×]", code, finalUrl, err.message);
-
-    if (code === 401) {
-      clearAuth();
-      if (location.pathname !== "/") location.replace("/");
-    }
+    const url = err.config?.url;
+    const data = err.response?.data;
+    console.error("[API×]", code, url, data ?? err.message);
+    err.userMessage = (typeof data === "string" ? data : data?.error) || err.message || "Error";
     throw err;
   }
 );
@@ -118,8 +102,8 @@ export const login = (gmail, password) =>
       return data;
     });
 
-export const register = (email, password, name) =>
-  api.post(`/users`, { email, password, name }).then(unwrap);
+export const register = (gmail, password, name) =>
+  api.post(`/users`, { gmail, password, name }).then(unwrap);
 
 export const changePassword = (id, oldPassword, newPassword) =>
   api
