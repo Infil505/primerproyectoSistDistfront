@@ -74,7 +74,8 @@ router.beforeEach((to, _from, next) => {
   const isAuth = !!getAuth();
 
   if (to.path === "/home" && isAuth) {
-    window.location.href = "/edificios";
+    next("/edificios");
+    setTimeout(() => window.location.reload(), 100);
     return;
   }
 
