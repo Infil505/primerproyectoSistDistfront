@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// ---------------- Base URL ----------------
 function resolveBaseURL() {
   const envBase = (import.meta.env.VITE_API_BASE || "").trim();
   if (envBase) return envBase.replace(/\/$/, "");
@@ -11,6 +12,7 @@ function resolveBaseURL() {
 const baseURL = resolveBaseURL();
 console.log("[API base]", baseURL);
 
+// --------------- Auth storage ---------------
 const AUTH_KEY = "auth";
 
 export function getAuth() {
@@ -27,9 +29,12 @@ export function clearAuth() {
   localStorage.removeItem(AUTH_KEY);
 }
 
+// --------------- Axios instance ---------------
 export const api = axios.create({
   baseURL,
   headers: { Accept: "application/json" },
+  // importante para sesiones (cookie 'sid')
+  withCredentials: true,
 });
 
 const isAbs = (s) => /^https?:\/\//i.test(s || "");
@@ -42,6 +47,7 @@ const joinUrl = (base, path) => {
   return `${b}${p}`;
 };
 
+// --------------- Interceptors ---------------
 api.interceptors.request.use((cfg) => {
   const full = joinUrl(cfg.baseURL, cfg.url);
   console.log(
@@ -74,12 +80,11 @@ api.interceptors.response.use(
   }
 );
 
+// --------------- Utils ---------------
 const unwrap = (r) => (r && r.data !== undefined ? r.data : null);
-
-// ---------- Helpers de normalización ----------
 const normEmail = (v) => String(v || "").trim().toLowerCase();
 
-// ---------- CRUD genérico ----------
+// --------------- CRUD genérico ---------------
 export const list = (entity, params = {}) =>
   api.get(`/${entity}`, { params }).then(unwrap);
 
@@ -98,29 +103,29 @@ export const patchOne = (entity, id, data) =>
 export const deleteOne = (entity, id) =>
   api.delete(`/${entity}?id=${encodeURIComponent(id)}`).then(unwrap);
 
-// ---------- Auth ----------
+// --------------- Auth ---------------
+
+// Login con SESIÓN (cookie 'sid') + JWT (token en respuesta)
 export const login = (email, password) =>
   api
-    .post(`/users?action=login`, {
+    .post(`/auth/login`, {
       email: normEmail(email),
       password: String(password || ""),
-      // compat opcional para back antiguos:
-      gmail: normEmail(email),
     })
     .then(unwrap)
     .then((data) => {
-      saveAuth(data); // { user, token }
+      // guarda { user, token } para uso con Bearer en otras FaaS
+      saveAuth(data);
       return data;
     });
 
+// Registro (tu backend /users crea usuario)
 export const register = (email, password, name) =>
   api
     .post(`/users`, {
       email: normEmail(email),
       password: String(password || ""),
       name: String(name || "").trim(),
-      // compat opcional:
-      gmail: normEmail(email),
     })
     .then(unwrap);
 
@@ -132,13 +137,19 @@ export const changePassword = (id, oldPassword, newPassword) =>
     })
     .then(unwrap);
 
+// Sesión opcional (si las usas en UI)
+export const sessionMe = () => api.get(`/auth/me`).then(unwrap);
+export const sessionLogout = () => api.post(`/auth/logout`).then(unwrap);
+
 export const logout = () => {
   clearAuth();
+  // opcional: cerrar sesión del lado servidor
+  sessionLogout().catch(() => {});
   if (location.pathname !== "/") location.replace("/");
 };
 
+// --------------- MQ helper ---------------
 export const isAccepted = (res) =>
   !!res && (res.accepted === true || res.status === "accepted") && !!res.correlationId;
 
-export const processQueue = () =>
-  api.post("/process-queue").then(unwrap);
+export const processQueue = () => api.post(`/process-queue`).then(unwrap);

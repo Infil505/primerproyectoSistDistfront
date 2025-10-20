@@ -91,7 +91,6 @@ function logout() {
   clearAuth();
   router.push("/");
 }
-
 async function processQueue() {
   processing.value = true;
   queueResult.value = null;
@@ -110,6 +109,10 @@ async function processQueue() {
       };
 
       if (data.failed === 0) {
+        setTimeout(() => {
+          router.go(0);
+        }, 1200);
+      } else {
         setTimeout(() => {
           queueResult.value = null;
         }, 10000);
@@ -131,6 +134,7 @@ async function processQueue() {
     processing.value = false;
   }
 }
+
 </script>
 
 <style scoped>

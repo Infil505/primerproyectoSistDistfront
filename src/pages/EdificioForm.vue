@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { list, getOne, createOne, updateOne } from '../api'
 import { useRoute, useRouter } from 'vue-router'
+import SuccessMessage from '../components/SuccessMessage.vue'
 
 const route = useRoute(), router = useRouter()
 const id = route.params.id
@@ -20,6 +21,9 @@ const form = ref({
 const ciudades = ref([])
 const arquitectos = ref([])
 
+const showMessage = ref(false)
+const messageText = ref('')
+
 async function loadRefs() {
   ciudades.value = await list('ciudades')
   arquitectos.value = await list('arquitectos')
@@ -27,14 +31,26 @@ async function loadRefs() {
 async function loadOne() {
   if (id) form.value = await getOne('edificios', id)
 }
+
 async function save() {
-  // validación mínima
   const required = ['nombre','altura_m','pisos','anio_inauguracion','uso','imagen_url','ciudad_id','arquitecto_id']
   for (const f of required) {
     if (!form.value[f] && form.value[f] !== 0) { alert(`Falta: ${f}`); return }
   }
-  if (id) await updateOne('edificios', id, form.value)
-  else await createOne('edificios', form.value)
+
+  if (id) {
+    await updateOne('edificios', id, form.value)
+    messageText.value = '✅ Los cambios del edificio fueron enviados a la cola de actualización.'
+  } else {
+    await createOne('edificios', form.value)
+    messageText.value = '🏗️ El nuevo edificio fue agregado a la cola de procesamiento. ¡Gracias!'
+  }
+
+  showMessage.value = true
+}
+
+function handleHide() {
+  showMessage.value = false
   router.push('/edificios')
 }
 
@@ -42,8 +58,12 @@ onMounted(async () => { await loadRefs(); await loadOne() })
 </script>
 
 <template>
-  <section style="padding:1rem;max-width:780px">
+  <section style="padding:1rem;max-width:780px;position:relative">
     <h1>{{ id ? 'Editar' : 'Nuevo' }} edificio</h1>
+
+    <SuccessMessage v-if="showMessage" :show="showMessage" :duration="3000" @hide="handleHide">
+      {{ messageText }}
+    </SuccessMessage>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
       <label>Nombre <input v-model="form.nombre"></label>
@@ -77,7 +97,7 @@ onMounted(async () => { await loadRefs(); await loadOne() })
   </section>
 </template>
 
-<style>
+<style scoped>
 label { display:block; }
 input, select { width:100%; padding:.4rem; }
 </style>
