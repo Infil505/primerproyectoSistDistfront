@@ -68,13 +68,18 @@ api.interceptors.response.use(
     const url = err.config?.url;
     const data = err.response?.data;
     console.error("[API×]", code, url, data ?? err.message);
-    err.userMessage = (typeof data === "string" ? data : data?.error) || err.message || "Error";
+    err.userMessage =
+      (typeof data === "string" ? data : data?.error) || err.message || "Error";
     throw err;
   }
 );
 
 const unwrap = (r) => (r && r.data !== undefined ? r.data : null);
 
+// ---------- Helpers de normalización ----------
+const normEmail = (v) => String(v || "").trim().toLowerCase();
+
+// ---------- CRUD genérico ----------
 export const list = (entity, params = {}) =>
   api.get(`/${entity}`, { params }).then(unwrap);
 
@@ -93,17 +98,31 @@ export const patchOne = (entity, id, data) =>
 export const deleteOne = (entity, id) =>
   api.delete(`/${entity}?id=${encodeURIComponent(id)}`).then(unwrap);
 
-export const login = (gmail, password) =>
+// ---------- Auth ----------
+export const login = (email, password) =>
   api
-    .post(`/users?action=login`, { gmail, password })
+    .post(`/users?action=login`, {
+      email: normEmail(email),
+      password: String(password || ""),
+      // compat opcional para back antiguos:
+      gmail: normEmail(email),
+    })
     .then(unwrap)
     .then((data) => {
-      saveAuth(data);
+      saveAuth(data); // { user, token }
       return data;
     });
 
-export const register = (gmail, password, name) =>
-  api.post(`/users`, { gmail, password, name }).then(unwrap);
+export const register = (email, password, name) =>
+  api
+    .post(`/users`, {
+      email: normEmail(email),
+      password: String(password || ""),
+      name: String(name || "").trim(),
+      // compat opcional:
+      gmail: normEmail(email),
+    })
+    .then(unwrap);
 
 export const changePassword = (id, oldPassword, newPassword) =>
   api
