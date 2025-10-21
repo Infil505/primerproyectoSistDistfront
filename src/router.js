@@ -12,9 +12,10 @@ import Login from "./pages/Login.vue";
 import Register from "./pages/Register.vue";
 
 const routes = [
-  { path: "/home", name: "Home", component: Home },
-  { path: "/", name: "Login", component: Login },
-  { path: "/register", name: "register", component: Register },
+  { path: "/", name: "Login", component: Login, meta: { guestOnly: true } },
+  { path: "/register", name: "Register", component: Register, meta: { guestOnly: true } },
+  { path: "/home", name: "Home", component: Home, meta: { requiresAuth: true } },
+  
   {
     path: "/edificios",
     component: EdificiosList,
@@ -32,7 +33,11 @@ const routes = [
     meta: { requiresAuth: true },
   },
 
-  { path: "/ciudades", component: CiudadesList, meta: { requiresAuth: true } },
+  { 
+    path: "/ciudades", 
+    component: CiudadesList, 
+    meta: { requiresAuth: true } 
+  },
   {
     path: "/ciudades/nuevo",
     component: CiudadForm,
@@ -62,7 +67,14 @@ const routes = [
     meta: { requiresAuth: true },
   },
 
-  { path: "/:pathMatch(.*)*", redirect: "/home" },
+  // Redirigir rutas no encontradas
+  { 
+    path: "/:pathMatch(.*)*", 
+    redirect: (to) => {
+      const isAuth = !!getAuth();
+      return isAuth ? "/edificios" : "/";
+    }
+  },
 ];
 
 const router = createRouter({
@@ -70,16 +82,15 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to, from, next) => {
   const isAuth = !!getAuth();
 
-  if (to.path === "/home" && isAuth) {
-    window.location.href = "/edificios";
+  if (to.meta.guestOnly && isAuth) {
+    next("/edificios");
     return;
   }
-
   if (to.meta.requiresAuth && !isAuth) {
-    window.location.href = "/edificios";
+    next("/");
     return;
   }
 
