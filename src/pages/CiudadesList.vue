@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { deleteOne, list } from '../api'
 import SuccessMessage from '../components/SuccessMessage.vue'
+import BackButton from '../components/boton.vue'
 
 const items = ref([])
 const loading = ref(false)
@@ -44,15 +45,15 @@ onMounted(load)
 <template>
   <section style="padding:1rem">
     <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h1>Ciudades</h1>
-      <router-link 
-        to="/ciudades/nuevo"
+      <div style="display:flex;align-items:center;gap:1rem">
+        <BackButton />
+        <h1 style="margin:0">Ciudades</h1>
+      </div>
+      <router-link to="/ciudades/nuevo"
         style="background:#3b82f6;color:white;padding:.5rem 1rem;border-radius:8px;text-decoration:none">
         ➕ Nueva
       </router-link>
     </header>
-
-    <!-- Mensaje reutilizable -->
     <SuccessMessage v-if="showMessage" :show="showMessage" :duration="2500" @hide="showMessage = false">
       {{ messageText }}
     </SuccessMessage>
@@ -64,7 +65,7 @@ onMounted(load)
         style="background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.1);transition:box-shadow 0.2s">
         <img :src="c.imagen_url" :alt="c.nombre"
           style="height:80px;width:80px;object-fit:cover;border-radius:10px;flex-shrink:0">
-        
+
         <div style="flex:1;display:grid;gap:.25rem">
           <div style="display:flex;align-items:center;gap:.5rem">
             <strong style="font-size:1.125rem;color:#111827">{{ c.nombre }}</strong>
@@ -82,13 +83,11 @@ onMounted(load)
         </div>
 
         <div style="display:flex;gap:.5rem;flex-shrink:0">
-          <router-link 
-            :to="`/ciudades/${c._id}`"
+          <router-link :to="`/ciudades/${c._id}`"
             style="background:#10b981;color:white;padding:.5rem 1rem;border-radius:6px;text-decoration:none;font-size:.875rem">
             ✏️ Editar
           </router-link>
-          <button 
-            @click="remove(c._id)"
+          <button @click="remove(c._id)"
             style="background:#ef4444;color:white;padding:.5rem 1rem;border-radius:6px;border:none;cursor:pointer;font-size:.875rem">
             🗑️ Eliminar
           </button>
@@ -104,11 +103,13 @@ onMounted(load)
 
 <style scoped>
 li:hover {
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
 }
+
 button:hover {
   opacity: 0.9;
 }
+
 a:hover {
   opacity: 0.9;
 }

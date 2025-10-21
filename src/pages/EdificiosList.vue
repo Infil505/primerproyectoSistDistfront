@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { list, deleteOne } from '../api'
 import SuccessMessage from '../components/SuccessMessage.vue'
+import BackButton from '../components/boton.vue'
 
 const items = ref([])
 const loading = ref(false)
@@ -89,7 +90,13 @@ onMounted(load)
 <template>
     <section style="padding:1rem">
         <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-            <h1>Edificios</h1>
+            <!-- ✅ Lado izquierdo: Botón de retorno + Título -->
+            <div style="display:flex;align-items:center;gap:1rem">
+                <BackButton />
+                <h1 style="margin:0">Edificios</h1>
+            </div>
+            
+            <!-- ✅ Lado derecho: Botón Nuevo -->
             <router-link to="/edificios/nuevo"
                 style="background:#3b82f6;color:white;padding:.5rem 1rem;border-radius:8px;text-decoration:none">
                 ➕ Nuevo
