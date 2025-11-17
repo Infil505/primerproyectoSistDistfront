@@ -4,15 +4,15 @@ import axios from "axios";
 function resolveBaseURL() {
   const envBase = (import.meta.env.VITE_API_BASE || "").trim();
   if (envBase) return envBase.replace(/\/$/, "");
+
   return import.meta.env.DEV
     ? "/api"
-    : "https://lucent-toffee-15f013.netlify.app/.netlify/functions";
+    : "/.netlify/functions";
 }
 
 const baseURL = resolveBaseURL();
 console.log("[API base]", baseURL);
 
-// --------------- Auth storage ---------------
 const AUTH_KEY = "auth";
 
 export function getAuth() {
@@ -33,7 +33,6 @@ export function clearAuth() {
 export const api = axios.create({
   baseURL,
   headers: { Accept: "application/json" },
-  // importante para sesiones (cookie 'sid')
   withCredentials: true,
 });
 
